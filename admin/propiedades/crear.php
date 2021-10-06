@@ -1,13 +1,31 @@
 <?php
 require '../../includes/config/database.php';
-conectarDB();
+$db = conectarDB();
 
-if($_SERVER['REQUEST_METHOD'] ==='POST'){
-    echo '<pre>';
-    var_dump($_POST);
-    echo '</pre>';
+if($_SERVER['REQUEST_METHOD'] === 'POST'){
+    // echo '<pre>';
+    // var_dump($_POST);
+    // echo '</pre>';
+
     $titulo = $_POST['titulo'];
     $precio = $_POST['precio'];
+    $descripcion = $_POST['descripcion'];
+    $habitaciones = $_POST['habitaciones'];
+    $wc = $_POST['wc'];
+    $estacionamiento = $_POST['estacionamiento'];
+    $vendedorId = $_POST['vendedor'];
+    //Insertar en la base de datos
+    $query = "INSERT INTO propiedades (titulo, precio, descripcion, habitaciones, wc, estacionamiento, vendedorId)
+     VALUES ('$titulo', '$precio', '$descripcion', '$habitaciones', '$wc', '$estacionamiento', '$vendedorId')";
+     
+     //echo $query;
+     $resultado = mysqli_query($db, $query);
+
+     if($resultado){
+         echo "Insertado Correctamente";
+     }
+         
+     
 }
 
 require '../../includes/funciones.php';
@@ -30,23 +48,23 @@ incluirTemplates('header');
             <input type="file" id="imagen" accept="imagen/jpeg, imagen/png">
 
             <label for="descripcion">Descripción:</label>
-            <textarea id="descripcion"></textarea>
+            <textarea id="descripcion" name="descripcion"></textarea>
         </fieldset>
 
         <fieldset>
             <legend>Información Propiedad</legend>
             <label for="habitaciones">Habitaciones:</label>
-            <input type="number" id="habitaciones" placeholder="Ej: 3" min="1" max="9">
+            <input type="number" id="habitaciones" name="habitaciones" placeholder="Ej: 3" min="1" max="9">
 
             <label for="wc">Baños:</label>
-            <input type="number" id="wc" placeholder="Ej: 3" min="1" max="9">
+            <input type="number" id="wc" name="wc" placeholder="Ej: 3" min="1" max="9">
 
-            <label for="Estacionamientos">Estacionamientos:</label>
-            <input type="number" id="Estacionamientos" placeholder="Ej: 3" min="1" max="9">
+            <label for="estacionamiento">estacionamiento:</label>
+            <input type="number" id="estacionamiento" name="estacionamiento" placeholder="Ej: 3" min="1" max="9">
         </fieldset>
         <fieldset>
             <legend>Vendedor</legend>
-            <select>
+            <select name="vendedor">
                 <option value="1">Robert</option>
                 <option value="2">Gabriela</option>
             </select>
