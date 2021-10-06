@@ -1,6 +1,6 @@
 <?php
 
 require 'app.php';
-function incluirTemplates($nombre, $inicio=false){
+function incluirTemplates($nombre, $inicio=false ){
     include TEMPLATES_URL . "/${nombre}.php";
 }
