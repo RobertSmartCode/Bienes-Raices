@@ -19,16 +19,18 @@ $vendedorId = '';
 
 // Ejecutar el código después que el usuario envíe el formulario
 if($_SERVER['REQUEST_METHOD'] === 'POST'){
-
-    $titulo = $_POST['titulo'];
-    $precio = $_POST['precio'];
-    $descripcion = $_POST['descripcion'];
-    $habitaciones = $_POST['habitaciones'];
-    $wc = $_POST['wc'];
-    $estacionamiento = $_POST['estacionamiento'];
-    $vendedorId = $_POST['vendedor'];
+    
+    $titulo = mysqli_real_escape_string( $db, $_POST['titulo']);
+    $precio = mysqli_real_escape_string( $db, $_POST['precio']);
+    $descripcion = mysqli_real_escape_string( $db, $_POST['descripcion']);
+    $habitaciones = mysqli_real_escape_string( $db, $_POST['habitaciones']);
+    $wc = mysqli_real_escape_string( $db, $_POST['wc']);
+    $estacionamiento = mysqli_real_escape_string( $db, $_POST['estacionamiento']);
+    $vendedorId = mysqli_real_escape_string( $db, $_POST['vendedor']);
     $creado = date('Y/m/d');
 
+    //Asignar files hacia una variable
+    $imagen = $_FILES['imagen'];
 
     if (!$titulo){
         $errores[]= "Debes añadir un Título";
@@ -54,6 +56,17 @@ if($_SERVER['REQUEST_METHOD'] === 'POST'){
     if (!$vendedorId){
         $errores[]= "Elige a un vendedor";
     }
+    if (!$imagen['name'] || $imagen['error']){
+        $errores[]= "La imagen es Obligatoria";
+    }
+
+    //Validar por tamaño (100kb máximo)
+    $medida = 1000*100;
+
+    if($imagen['size'] > $medida){
+        $errores[]="La Imagen es muy pesada";
+    }
+
    
 
     //Revisar que el arreglo de errores esté vacío
@@ -88,7 +101,7 @@ incluirTemplates('header');
     </section>
     <?php endforeach; ?>
 
-    <form class="formulario" method="POST" action="/admin/propiedades/crear.php">
+    <form class="formulario" method="POST" action="/admin/propiedades/crear.php" enctype="multipart/form-data">
         <fieldset>
             <legend>Información General</legend>
             <label for="titulo">Título:</label>
@@ -99,7 +112,7 @@ incluirTemplates('header');
                 value="<?php echo $precio; ?>">
 
             <label for="imagen">Imagen:</label>
-            <input type="file" id="imagen" accept="imagen/jpeg, imagen/png">
+            <input type="file" id="imagen" accept="imagen/jpeg, imagen/png" name="imagen">
 
             <label for="descripcion">Descripción:</label>
             <textarea id="descripcion" name="descripcion"><?php echo $descripcion; ?></textarea>
