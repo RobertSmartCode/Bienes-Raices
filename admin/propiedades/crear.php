@@ -2,21 +2,23 @@
 require '../../includes/config/database.php';
 $db = conectarDB();
 
+//Consultar para obtener los vendedores
+$consulta = "SELECT * FROM vendedores";
+$res = mysqli_query($db, $consulta);
+
 //Arreglo con mensajes de errores
 $errores = [];
+
 $titulo = '';
 $precio = '';
 $descripcion = '';
 $habitaciones = '';
-$wc = $_POST['wc'];
+$wc = '';
 $estacionamiento = '';
 $vendedorId = '';
 
 // Ejecutar el código después que el usuario envíe el formulario
 if($_SERVER['REQUEST_METHOD'] === 'POST'){
-    // echo '<pre>';
-    // var_dump($_POST);
-    // echo '</pre>';
 
     $titulo = $_POST['titulo'];
     $precio = $_POST['precio'];
@@ -25,14 +27,17 @@ if($_SERVER['REQUEST_METHOD'] === 'POST'){
     $wc = $_POST['wc'];
     $estacionamiento = $_POST['estacionamiento'];
     $vendedorId = $_POST['vendedor'];
+    $creado = date('Y/m/d');
+
+
     if (!$titulo){
         $errores[]= "Debes añadir un Título";
     }
     if (!$precio){
         $errores[]= "El Precio es Obligatorio";
     }
-    if (strlen($descripcion) < 50){
-        $errores[]= "La Descripción es Obligatoria y debe tener al menos 50 Caracteres";
+    if (strlen($descripcion) < 10){
+        $errores[]= "La Descripción es Obligatoria y debe tener al menos 10 Caracteres";
     }
     if (!$habitaciones){
         $errores[]= "El número de las habitaciones debe ser Obligatorio";
@@ -49,22 +54,21 @@ if($_SERVER['REQUEST_METHOD'] === 'POST'){
     if (!$vendedorId){
         $errores[]= "Elige a un vendedor";
     }
-    // echo '<pre>';
-    // var_dump($errores);
-    // echo '</pre>';
+   
 
     //Revisar que el arreglo de errores esté vacío
     if( empty($errores)){
 
             //Insertar en la base de datos
-    $query = "INSERT INTO propiedades (titulo, precio, descripcion, habitaciones, wc, estacionamiento, vendedorId)
-    VALUES ('$titulo', '$precio', '$descripcion', '$habitaciones', '$wc', '$estacionamiento', '$vendedorId')";
+    $query = "INSERT INTO propiedades (titulo, precio, descripcion, habitaciones, wc, estacionamiento, creado, vendedorId)
+    VALUES ('$titulo', '$precio', '$descripcion', '$habitaciones', '$wc', '$estacionamiento', '$creado', '$vendedorId')";
     
     //echo $query;
     $resultado = mysqli_query($db, $query);
 
     if($resultado){
-        echo "Insertado Correctamente";
+        //Redireccionar al Usuario
+        header('Location: /admin');
     }
 }
 
@@ -116,10 +120,13 @@ incluirTemplates('header');
         </fieldset>
         <fieldset>
             <legend>Vendedor</legend>
-            <select name="vendedor">
+            <select name="vendedor" id="vendedor">
                 <option value="">--Seleccione--</option>
-                <option value="1">Robert</option>
-                <option value="2">Gabriela</option>
+                <?php while ($vendedor = mysqli_fetch_assoc($res)): ?>
+                <option <?php echo $vendedorId === $vendedor['id']? 'selected' : ''; ?>
+                    value="<?php echo $vendedor['id']; ?>">
+                    <?php echo $vendedor['nombre'] . " " . $vendedor['apellido'] ?></option>
+                <?php  endwhile; ?>
             </select>
         </fieldset>
         <input type="submit" value="Crear Propiedad" class="boton boton-verde">
