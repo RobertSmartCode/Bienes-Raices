@@ -112,7 +112,7 @@ incluirTemplates('header', $inicio=true);
             </picture>
 
             <div class="contenido-anuncio">
-                <h3>Casa con alberca</h3>
+                <h3>Casa con alberca olimpica</h3>
                 <p>Casa en el lago con excelente vista, acabados de lujo a un excelente precio</p>
                 <p class="precio">$3,0000,000</p>
 
