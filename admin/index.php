@@ -1,7 +1,10 @@
 <?php
-// echo "<pre> ";
-// var_dump($_POST);
-// echo"</pre>";
+require '../includes/funciones.php';
+$auth = estaAutenticado();
+
+if(!$auth){
+    header('Location: /');
+}
 
 // Importar la conexión
 
@@ -43,7 +46,6 @@ if($_SERVER['REQUEST_METHOD']==='POST'){
 }
 
 //Incluye un template
-require '../includes/funciones.php';
 incluirTemplates('header');
 ?>
 
