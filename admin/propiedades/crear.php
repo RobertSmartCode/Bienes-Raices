@@ -1,12 +1,10 @@
 <?php
+require '../../includes/app.php';
 
-require '../../includes/funciones.php';
-$auth = estaAutenticado();
+use App\Propiedad;
 
-if(!$auth){
-    header('Location: /');
-}
-require '../../includes/config/database.php';
+estaAutenticado();
+
 $db = conectarDB();
 
 //Consultar para obtener los vendedores
@@ -14,7 +12,7 @@ $consulta = "SELECT * FROM vendedores";
 $res = mysqli_query($db, $consulta);
 
 //Arreglo con mensajes de errores
-$errores = [];
+$errores = Propiedad::getErrores();
 
 $titulo = '';
 $precio = '';
@@ -26,58 +24,21 @@ $vendedorId = '';
 
 // Ejecutar el código después que el usuario envíe el formulario
 if($_SERVER['REQUEST_METHOD'] === 'POST'){
-    
-    $titulo = mysqli_real_escape_string( $db, $_POST['titulo']);
-    $precio = mysqli_real_escape_string( $db, $_POST['precio']);
-    $descripcion = mysqli_real_escape_string( $db, $_POST['descripcion']);
-    $habitaciones = mysqli_real_escape_string( $db, $_POST['habitaciones']);
-    $wc = mysqli_real_escape_string( $db, $_POST['wc']);
-    $estacionamiento = mysqli_real_escape_string( $db, $_POST['estacionamiento']);
-    $vendedorId = mysqli_real_escape_string( $db, $_POST['vendedor']);
-    $creado = date('Y/m/d');
 
-    //Asignar files hacia una variable
-    $imagen = $_FILES['imagen'];
+    $propiedad = new Propiedad($_POST);
 
-    if (!$titulo){
-        $errores[]= "Debes añadir un Título";
-    }
-    if (!$precio){
-        $errores[]= "El Precio es Obligatorio";
-    }
-    if (strlen($descripcion) < 10){
-        $errores[]= "La Descripción es Obligatoria y debe tener al menos 10 Caracteres";
-    }
-    if (!$habitaciones){
-        $errores[]= "El número de las habitaciones debe ser Obligatorio";
-    }
-    if (!$habitaciones){
-        $errores[]= "El número de las habitaciones debe ser Obligatorio";
-    }
-    if (!$wc){
-        $errores[]= "El número de los Baños debe ser Obligatorio";
-    }
-    if (!$estacionamiento){
-        $errores[]= "El número de lugares de Estacionamiento debe ser Obligatorio";
-    }
-    if (!$vendedorId){
-        $errores[]= "Elige a un vendedor";
-    }
-    if (!$imagen['name'] || $imagen['error']){
-        $errores[]= "La imagen es Obligatoria";
-    }
-
-    //Validar por tamaño (1MB máximo)
-    $medida = 1000*1000;
-
-    if($imagen['size'] > $medida){
-        $errores[]="La Imagen es muy pesada";
-    }
+   $errores = $propiedad->validar();
 
    
-
-    //Revisar que el arreglo de errores esté vacío
     if( empty($errores)){
+
+           
+   $propiedad->guardar();
+
+   //Asignar files hacia una variable
+   $imagen = $_FILES['imagen'];
+
+   //Revisar que el arreglo de errores esté vacío
 
 
         /**Subida de Archivos */ 
@@ -96,9 +57,7 @@ if($_SERVER['REQUEST_METHOD'] === 'POST'){
 
         move_uploaded_file($imagen['tmp_name'], $carpetaImagenes . $nombreImagen);
 
-            //Insertar en la base de datos
-    $query = "INSERT INTO propiedades (titulo, precio, imagen, descripcion, habitaciones, wc, estacionamiento, creado, vendedorId)
-    VALUES ('$titulo', '$precio', '$nombreImagen', '$descripcion', '$habitaciones', '$wc', '$estacionamiento', '$creado', '$vendedorId')";
+            
     
     //echo $query;
     $resultado = mysqli_query($db, $query);
@@ -156,7 +115,7 @@ incluirTemplates('header');
         </fieldset>
         <fieldset>
             <legend>Vendedor</legend>
-            <select name="vendedor" id="vendedor">
+            <select name="vendedorId" id="vendedor">
                 <option value="">--Seleccione--</option>
                 <?php while ($vendedor = mysqli_fetch_assoc($res)): ?>
                 <option <?php echo $vendedorId === $vendedor['id']? 'selected' : ''; ?>

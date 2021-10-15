@@ -1,6 +1,9 @@
 <?php
 
-require 'includes/config/database.php';
+// Incluye el header
+
+require 'includes/app.php';
+
 $db = conectarDB();
 
 //Arreglo con mensajes de errores
@@ -68,9 +71,7 @@ if($resultado->num_rows){
 
 
 
-// Incluye el header
 
-require 'includes/funciones.php';
 incluirTemplates('header');
 ?>
 
