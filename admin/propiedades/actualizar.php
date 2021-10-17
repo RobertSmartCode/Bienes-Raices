@@ -2,6 +2,7 @@
 
 require '../../includes/app.php';
 use App\Propiedad;
+use Intervention\Image\ImageManagerStatic as Image;
 estaAutenticado();
 
 //Validar URL por ID válido
@@ -21,8 +22,7 @@ $consulta = "SELECT * FROM vendedores";
 $res = mysqli_query($db, $consulta);
 
 //Arreglo con mensajes de errores
-$errores = [];
-
+$errores = Propiedad::getErrores();
 
 // Ejecutar el código después que el usuario envíe el formulario
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
@@ -32,88 +32,24 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $args = $_POST['propiedad']; 
 
     $propiedad->sincronizar($args);
-
-    debuguear($propiedad);
-
     
-    //Asignar files hacia una variable
-    $imagen = $_FILES['imagen'];
+    //Validación
+    $errores= $propiedad->validar();
 
-    if (!$titulo) {
-        $errores[] = "Debes añadir un Título";
-    }
-    if (!$precio) {
-        $errores[] = "El Precio es Obligatorio";
-    }
-    if (strlen($descripcion) < 10) {
-        $errores[] = "La Descripción es Obligatoria y debe tener al menos 10 Caracteres";
-    }
-    if (!$habitaciones) {
-        $errores[] = "El número de las habitaciones debe ser Obligatorio";
-    }
-    if (!$habitaciones) {
-        $errores[] = "El número de las habitaciones debe ser Obligatorio";
-    }
-    if (!$wc) {
-        $errores[] = "El número de los Baños debe ser Obligatorio";
-    }
-    if (!$estacionamiento) {
-        $errores[] = "El número de lugares de Estacionamiento debe ser Obligatorio";
-    }
-    if (!$vendedorId) {
-        $errores[] = "Elige a un vendedor";
-    }
+    //Subida de archivos
 
-    //Validar por tamaño (1MB máximo)
-    $medida = 1000 * 1000;
-
-    if ($imagen['size'] > $medida) {
-        $errores[] = "La Imagen es muy pesada";
-    }
-
-
-    //Revisar que el arreglo de errores esté vacío
+      //Generar un nombre único
+      $nombreImagen = md5(uniqid(rand(), true)) . ".jpg";
+    
+    if($_FILES['propiedad']['tmp_name']['imagen']){
+        $image = Image::make($_FILES['propiedad']['tmp_name']['imagen'])->fit(800, 600);
+        $propiedad->setImagen($nombreImagen);
+    } 
     if (empty($errores)) {
+        //Almacenar imagen
+        $image->save(CARPETA_IMAGENES . $nombreImagen);
 
-        //Craer carpeta
-        $carpetaImagenes = '../../imagenes/';
-
-        if (!is_dir($carpetaImagenes)) {
-            mkdir($carpetaImagenes);
-        }
-
-        $nombreImagen = '';
-
-
-        /**Subida de Archivos */
-
-        if ($imagen['name']) {
-            //Eliminar la imagen previa
-            unlink($carpetaImagenes . $propiedad['imagen']);
-
-            //Generar un nombre único
-            $nombreImagen = md5(uniqid(rand(), true)) . ".jpg";
-
-            //Subir la imagen
-
-            move_uploaded_file($imagen['tmp_name'], $carpetaImagenes . $nombreImagen);
-        } else {
-            $nombreImagen = $propiedad['imagen'];
-        }
-
-
-
-
-        //Insertar en la base de datos
-        $query = "UPDATE propiedades SET titulo = '${titulo}', precio = '${precio}', imagen = '${nombreImagen}', descripcion = '${descripcion}', habitaciones = ${habitaciones}, wc = ${wc}, estacionamiento = ${estacionamiento} , vendedorId = ${vendedorId} WHERE id= ${id} ";
-
-        // echo $query;
-        $resultado = mysqli_query($db, $query);
-
-        if ($resultado) {
-            //Redireccionar al Usuario
-            header('Location: /admin?resultado=2');
-        }
+        $propiedad->guardar();
     }
 }
 incluirTemplates('header');

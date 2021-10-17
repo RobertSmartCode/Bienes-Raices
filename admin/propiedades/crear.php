@@ -33,7 +33,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
         if (!is_dir($carpetaImagenes)) {
             mkdir($carpetaImagenes);
-        }
+        } //Hasta aquí no está en el código de Juan
         //Generar un nombre único
         $nombreImagen = md5(uniqid(rand(), true)) . ".jpg";
 
