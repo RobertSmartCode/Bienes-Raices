@@ -28,12 +28,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
             /**Subida de Archivos */
 
-        //Craer carpeta // Esto no lo tiene Juan
-        $carpetaImagenes = '../../imagenes/';
-
-        if (!is_dir($carpetaImagenes)) {
-            mkdir($carpetaImagenes);
-        } //Hasta aquí no está en el código de Juan
         //Generar un nombre único
         $nombreImagen = md5(uniqid(rand(), true)) . ".jpg";
 
@@ -44,8 +38,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $image = Image::make($_FILES['propiedad']['tmp_name']['imagen'])->fit(800, 600);
             $propiedad->setImagen($nombreImagen);
         } 
+
+        
         //Validar
     $errores = $propiedad->validar();
+
 
     if (empty($errores)) {
 
@@ -59,14 +56,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $image->save(CARPETA_IMAGENES . $nombreImagen);
 
         //Guardar en la base de datos
-        $resultado = $propiedad->guardar();
+        $propiedad->guardar();
 
-        //Mensaje de exito o error
-
-        if ($resultado) {
-            //Redireccionar al Usuario
-            header('Location: /admin?resultado=1');
-        }
+     
     }
 }
 
