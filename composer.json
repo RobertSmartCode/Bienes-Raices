@@ -1,0 +1,20 @@
+{
+    "name": "roca1/bienesraices",
+    "description": "Creando un proyecto con programacion orientada a objetos",
+    "type": "project",
+
+    "authors": [
+        {
+            "name": "Robert Smart",
+            "email": "roca1388@gmail.com"
+        }
+    ],
+    "require": {
+        "intervention/image": "^2.7"
+    },
+    "autoload":{
+        "psr-4": {
+            "App\\" :"./classes"
+        }
+    }
+}
