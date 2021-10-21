@@ -24,16 +24,23 @@ class Router{
 
         if($fn){
             //La URL existe y hay una función 
-            //debuguear($fn);
+            //debuguear($this);
 
             call_user_func($fn, $this);
 
         }else{
             //Redirecionar a una página 404
             echo "Página No Encontrada";
-        }
+        }   
+    }
+    //Muestra Vista
+    public function render($view){
+        ob_start(); //Almacena en memoria
+        include __DIR__ . "/views/$view.php";
 
-        
+        $contenido = ob_get_clean();
+
+        include __DIR__ . "/views/layout.php";
     }
 }
 
