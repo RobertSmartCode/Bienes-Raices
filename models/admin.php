@@ -19,7 +19,6 @@ class Admin extends ActiveRecord {
         $this->password = $args['password'] ?? '';
         
     }
-
     public function validar(){
         if(!$this->email){
             self::$errores[] = 'El Email es obligatorio';
@@ -36,13 +35,32 @@ class Admin extends ActiveRecord {
 
         $resultado = self::$db->query($query);
         
-        
         if(!$resultado->num_rows){
             self::$errores[] = 'El usuario no existe';
             return;
         }
         return $resultado;
     }
+    
+    public function comprobarPassword($resultado){
+        $usuario = $resultado->fetch_object();
 
+        //Esta linea compara la contraseña del usuario con el hash almacenado en la DB es un bool (True o false)
+        $autenticado = password_verify($this->password, $usuario->password);
+        if(!$autenticado){
+            self::$errores[] = 'El password es Incorrecto';
+        }
+        return $autenticado;
+
+    }
+    public function autenticar(){
+        session_start();
+
+        //Llenar el arreglo
+        $_SESSION['usuario'] = $this->email;
+        $_SESSION['login'] = true;
+
+        header('Location: /admin');
+    }
     
 }
