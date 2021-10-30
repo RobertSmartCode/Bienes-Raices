@@ -1,13 +1,11 @@
 <main class="contenedor seccion contenido-centrado">
-    <h1>Iniciar Seción</h1>
+    <h1 data-cy="heading-login">Iniciar Seción</h1>
 
     <?php foreach ($errores as $error) : ?>
-    <div class="alerta error">
-        <?php echo $error; ?>
-    </div>
+    <div data-cy="alerta-login" class="alerta error"><?php echo $error; ?></div>
     <?php endforeach; ?>
 
-    <form method="POST" class="formulario" acction="/login">
+    <form data-cy="formulario-login" method="POST" class="formulario" acction="/login">
         <fieldset>
             <legend>Email y Password</legend>
 

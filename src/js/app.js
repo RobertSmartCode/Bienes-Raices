@@ -58,20 +58,20 @@ function mostrarMetodosContato(e){
     contactoDiv.innerHTML = `
 
             <label for="telefono">Número de Teléfono</label>
-            <input type="tel" placeholder="Tu Teléfono" id="telefono" name="contacto[telefono]">
+            <input data-cy="input-telefono" type="tel" placeholder="Tu Teléfono" id="telefono" name="contacto[telefono]">
 
             <p>Elija la fecha y la hora para la llamada</p>
 
             <label for="fecha">Fecha:</label>
-            <input type="date" id="fecha" name="contacto[fecha]">
+            <input data-cy="input-fecha" type="date" id="fecha" name="contacto[fecha]">
 
             <label for="hora">Hora:</label>
-            <input type="time" id="hora" min="09:00" max="18:00" name="contacto[hora]">
+            <input data-cy="input-hora" type="time" id="hora" min="09:00" max="18:00" name="contacto[hora]">
     `;  
    }else{
     contactoDiv.innerHTML = `
         <label for="email">E-mail</label>
-        <input type="email" placeholder="Tu Email" id="email" name="contacto[email]">
+        <input data-cy="input-email" type="email" placeholder="Tu Email" id="email" name="contacto[email]">
     
     
     
